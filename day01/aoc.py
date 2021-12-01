@@ -32,7 +32,4 @@ if __name__ == "__main__":
         "part1": increases_of_depth,
         "part2": increases_of_depth_with_sliding_mean,
     }
-
-    file_input = read_input("input.txt")
-    result = solver[part](file_input)
-    print(result)
+    print(solver[part](read_input()))
