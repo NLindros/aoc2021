@@ -1,39 +1,39 @@
-from math import sqrt
-from itertools import cycle
 import os
+from pathlib import Path
+from itertools import pairwise, islice
+from collections import deque
 
-def read_input(file_path):
-    with open(file_path, 'r') as fid:
+def read_input(file_path=Path(__file__).parent / "input.txt"):
+    with open(file_path, "r") as fid:
         return [int(val) for val in fid]
 
-def solve_part_1(values):
-    return sum(idx*val for idx, val in enumerate(values) if is_prime(val))
-    
-def solve_part_2(values):
-    signs = cycle([1, -1])
-    return sum([
-        sign * val for val, sign in zip(values, signs) if not is_prime(val)
-    ])
+def depth_increases(depths):
+    return sum((b > a) for a, b in pairwise(depths))
 
-def is_prime(value):
-    if value <= 2:
-        return False
-    for div in range(2, int(sqrt(value)+1)):
-        if value % div == 0:
-            return False
-    return True
+def sliding_window(iterable, win_size):
+    it = iter(iterable)
+    window = deque(islice(it, win_size), maxlen=win_size)
+    if len(window) == win_size:
+        yield tuple(window)
+    for x in it:
+        window.append(x)
+        yield tuple(window)
 
 
-if __name__ == '__main__':
+def sliding_mean_increases(dephts):
+    sums = (sum(win) for win in sliding_window(dephts, win_size=3))
+    return depth_increases(sums)
 
-    part = os.environ.get('part')
+
+if __name__ == "__main__":
+
+    part = os.environ.get("part")
     solver = {
-        'part1': solve_part_1,
-        'part2': solve_part_2,
-        }
+        "part1": depth_increases,
+        "part2": sliding_mean_increases,
+    }
 
-    file_input = read_input('input.txt')
+    file_input = read_input("input.txt")
     result = solver[part](file_input)
 
-    print('Python')
     print(result)
