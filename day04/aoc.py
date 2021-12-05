@@ -13,14 +13,9 @@ def read_input(file_path=Path(__file__).parent / "input.txt"):
 
 
 class Board:
-    SIZE = (5, 5)
-
     def __init__(self, board):
         self._board = np.array(board)
         self._marked = np.full(self._board.shape, False)
-
-    def __repr__(self) -> str:
-        return f"Board({self._board}"
 
     def __eq__(self, other) -> bool:
         if isinstance(other, Board):
@@ -68,16 +63,17 @@ def last_board_to_win(playing_boards: List[Board], numbers):
                 return board, number
 
 
+def part1_solution(numbers, boards):
+    winner, final_number = get_winner_board(boards, numbers)
+    return winner.sum_of_unmarked() * final_number
+
+
+def part2_solution(numbers, boards):
+    last_board, final_number = last_board_to_win(boards, numbers)
+    return last_board.sum_of_unmarked() * final_number
+
+
 if __name__ == "__main__":
-
     part = os.environ.get("part")
-    solver = {
-        "part1": solve_part_1,
-        "part2": solve_part_2,
-    }
-
-    file_input = read_input("input.txt")
-    result = solver[part](file_input)
-
-    print("Python")
-    print(result)
+    solver = {"part1": part1_solution, "part2": part2_solution}
+    print(solver[part](*read_input()))

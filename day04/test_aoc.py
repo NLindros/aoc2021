@@ -53,8 +53,7 @@ class TestPart1(unittest.TestCase):
 
     def test_with_real_input(self):
         numbers, boards = aoc.read_input(Path(__file__).parent / "input.txt")
-        winner, final_number = aoc.get_winner_board(boards, numbers)
-        self.assertEqual(winner.sum_of_unmarked() * final_number, 82440)
+        self.assertEqual(aoc.part1_solution(numbers, boards), 82440)
 
 
 class TestPart2(unittest.TestCase):
@@ -66,5 +65,4 @@ class TestPart2(unittest.TestCase):
 
     def test_last_to_win_with_input(self):
         numbers, boards = aoc.read_input(Path(__file__).parent / "input.txt")
-        last_board, final_number = aoc.last_board_to_win(boards, numbers)
-        self.assertEqual(last_board.sum_of_unmarked() * final_number, 20774)
+        self.assertEqual(aoc.part2_solution(numbers, boards), 20774)
