@@ -65,10 +65,10 @@ class TestPart2(unittest.TestCase):
             "00010",
             "01010",
         ]
-        oxygen = aoc.life_support_decode(
+        oxygen = aoc.life_support(
             data, to_keep=lambda count: "1" if count["1"] >= count["0"] else "0"
         )
-        co2 = aoc.life_support_decode(
+        co2 = aoc.life_support(
             data, to_keep=lambda count: "1" if count["1"] < count["0"] else "0"
         )
         self.assertEqual(oxygen, "10111")

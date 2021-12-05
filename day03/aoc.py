@@ -2,6 +2,7 @@ from collections import Counter
 import os
 from pathlib import Path
 from statistics import mode
+from math import prod
 
 
 def read_input(file_path=Path(__file__).parent / "input.txt"):
@@ -28,7 +29,7 @@ def power_consumption(data):
     return gamma * epsilon
 
 
-def life_support_decode(data, to_keep):
+def life_support(data, to_keep):
     n = len(data[0])
     for i in range(n):
         count = Counter(x[i] for x in data)
@@ -40,9 +41,11 @@ def life_support_decode(data, to_keep):
 
 
 def life_support_rating(data):
-    oxygen = life_support_decode(data, to_keep=lambda count: "1" if count["1"] >= count["0"] else "0")
-    co2 = life_support_decode(data, to_keep=lambda count: "1" if count["1"] < count["0"] else "0")
-    return bin2dec(oxygen) * bin2dec(co2)
+    oxygen_key = lambda count: "1" if count["1"] >= count["0"] else "0"
+    co2_key = lambda count: "1" if count["1"] < count["0"] else "0"
+    return prod(
+        bin2dec(life_support(data, to_keep=key)) for key in (oxygen_key, co2_key)
+    )
 
 
 if __name__ == "__main__":
