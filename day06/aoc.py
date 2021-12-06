@@ -1,20 +1,18 @@
-from pathlib import Path
 import os
+from collections import deque, Counter
 
 
-def read_input(file_path=Path(__file__).parent / "input.txt"):
+def read_input(file_path="input.txt"):
     with open(file_path, "r") as fid:
-        return list(map(int, fid.readline().split(",")))
+        return map(int, fid.readline().split(","))
 
 
 def run_life_simulation(ages, days):
-    population_map = [0] * 9
-    for age in ages:
-        population_map[age] += 1
+    amount = Counter(ages)
+    population_map = deque(amount[idx] for idx in range(9))
     for day in range(days):
-        spawns = population_map[0]
-        population_map = [*population_map[1:], spawns]
-        population_map[6] += spawns
+        population_map.rotate(-1)
+        population_map[6] += population_map[8]
     return sum(population_map)
 
 
