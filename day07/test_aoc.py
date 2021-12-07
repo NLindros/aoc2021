@@ -16,8 +16,8 @@ class TestPart1(unittest.TestCase):
         self.assertEqual(result, 37)
 
     def test_median(self):
-        self.assertEqual(aoc.find_median([1, 3, 4]), 3)
-        self.assertEqual(aoc.find_median([1, 3, 4, 6]), 3.5)
+        self.assertEqual(aoc.median([1, 3, 4]), 3)
+        self.assertEqual(aoc.median([1, 3, 4, 6]), 3.5)
 
     def test_part1_input(self):
         data = aoc.read_input(Path(__file__).parent / "input.txt")
