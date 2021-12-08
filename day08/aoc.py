@@ -1,10 +1,7 @@
-from itertools import count, groupby
-from pathlib import Path
-from statistics import median
 import os
 
 
-def read_input(file_path=Path(__file__).parent / "input.txt"):
+def read_input(file_path="input.txt"):
     with open(file_path, "r") as fid:
         return fid.readlines()
 
