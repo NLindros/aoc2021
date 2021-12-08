@@ -8,11 +8,11 @@ def read_input(file_path="input.txt"):
 
 def solution_part_1(data):
     target_lengths = [2, 3, 4, 7]
-    matching_segments = [
-        [seg for seg in collect_sets(line.split("|")[-1]) if len(seg) in target_lengths]
+    segment_lengths = [
+        len([seg for seg in collect_sets(line.split("|")[-1]) if len(seg) in target_lengths])
         for line in data
     ]
-    return sum(map(len, matching_segments))
+    return sum(segment_lengths)
 
 
 def collect_sets(signals):
@@ -21,8 +21,10 @@ def collect_sets(signals):
 
 def decode_line(line):
     segments, output = map(collect_sets, line.split("|"))
-    coding_of = [set()] * 10
-    coding_of[1], coding_of[7], coding_of[4], *multi_groups, coding_of[8] = sorted(segments, key=len)
+    coding_of = [None] * 10
+    coding_of[1], coding_of[7], coding_of[4], *multi_groups, coding_of[8] = sorted(
+        segments, key=len
+    )
     seg_of_size_5, seg_of_size_6 = multi_groups[:3], multi_groups[3:]
 
     top_left_and_mid = coding_of[4] - coding_of[1]
@@ -58,7 +60,7 @@ def decode_output(outputs, coding):
 
 
 def solution_part_2(data):
-    return sum([decode_line(line) for line in data])
+    return sum(map(decode_line, data))
 
 
 if __name__ == "__main__":
