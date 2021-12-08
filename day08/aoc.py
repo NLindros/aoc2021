@@ -23,28 +23,24 @@ def collect_sets(signals):
 
 
 def decode_line(line):
-    segments, output = map(collect_sets, line.split(" | "))
-    segment_group = {
-        length: list(segment_group)
-        for length, segment_group in groupby(sorted(segments, key=len), key=len)
-    }
+    segments, output = map(collect_sets, line.split("|"))
     coding_of = [set()] * 10
-    coding_of[1] = segment_group[2][0]
-    coding_of[7] = segment_group[3][0]
-    coding_of[4] = segment_group[4][0]
-    coding_of[8] = segment_group[7][0]
+    coding_of[1], coding_of[7], coding_of[4], *multi_groups, coding_of[8] = sorted(
+        segments, key=len
+    )
+    seg_of_size_5, seg_of_size_6 = multi_groups[:3], multi_groups[3:]
 
     top_left_and_mid = coding_of[4] - coding_of[1]
-    coding_of[5] = pop_seg_diff_of_length(3, segment_group[5], top_left_and_mid)
-    coding_of[0] = pop_seg_diff_of_length(5, segment_group[6], top_left_and_mid)
+    coding_of[5] = pop_seg_with_diff_of_length(3, seg_of_size_5, top_left_and_mid)
+    coding_of[0] = pop_seg_with_diff_of_length(5, seg_of_size_6, top_left_and_mid)
 
-    coding_of[3], coding_of[2] = sort_on_diff_size(segment_group[5], coding_of[5])
-    coding_of[9], coding_of[6] = sort_on_diff_size(segment_group[6], coding_of[3])
+    coding_of[3], coding_of[2] = sort_on_diff_size(seg_of_size_5, coding_of[5])
+    coding_of[9], coding_of[6] = sort_on_diff_size(seg_of_size_6, coding_of[3])
 
     return decode_output(output, coding_of)
 
 
-def pop_seg_diff_of_length(target_length, segments, diff_reference_segment):
+def pop_seg_with_diff_of_length(target_length, segments, diff_reference_segment):
     for segment in segments:
         rem = segment - diff_reference_segment
         if len(rem) == target_length:
@@ -56,14 +52,14 @@ def sort_on_diff_size(segments, diff_reference_segment):
     return sorted(segments, key=lambda seg: seg - diff_reference_segment)
 
 
-def decode_output(output, coding):
-    result = []
-    for o in output:
-        for num, segment in enumerate(coding):
-            if o == segment:
-                result.append(num)
-                break
-    return int("".join(map(str, result)))
+def decode_output(outputs, coding):
+    result = [
+        str(num)
+        for output in outputs
+        for num, segment in enumerate(coding)
+        if output == segment
+    ]
+    return int("".join(result))
 
 
 def sum_result(data):
