@@ -9,7 +9,7 @@ def read_input(file_path=Path(__file__).parent / "input.txt"):
         return fid.readlines()
 
 
-def count_output(data):
+def solution_part_1(data):
     target_lengths = [2, 3, 4, 7]
     matching_segments = [
         [seg for seg in collect_sets(line.split("|")[-1]) if len(seg) in target_lengths]
@@ -60,11 +60,11 @@ def decode_output(outputs, coding):
     return int("".join(result))
 
 
-def sum_result(data):
+def solution_part_2(data):
     return sum([decode_line(line) for line in data])
 
 
 if __name__ == "__main__":
     part = os.environ.get("part")
-    solver = {"part1": count_output, "part2": sum_result}
+    solver = {"part1": solution_part_1, "part2": solution_part_2}
     print(solver[part](read_input()))
