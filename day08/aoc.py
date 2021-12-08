@@ -23,43 +23,37 @@ def collect_sets(signals):
 
 
 def decode_line(line):
-    patterns, output = map(collect_sets, line.split(" | "))
-    patterns_by_length = {
-        length: list(pattern_group)
-        for length, pattern_group in groupby(sorted(patterns, key=len), key=len)
+    segments, output = map(collect_sets, line.split(" | "))
+    segment_group = {
+        length: list(segment_group)
+        for length, segment_group in groupby(sorted(segments, key=len), key=len)
     }
-    coding = [set()] * 10
-    coding[1] = patterns_by_length[2][0]
-    coding[7] = patterns_by_length[3][0]
-    coding[4] = patterns_by_length[4][0]
-    coding[8] = patterns_by_length[7][0]
-    top_side_and_middle_segments = coding[4] - coding[1]
-    for pattern in patterns_by_length[5]:
-        segments = pattern - top_side_and_middle_segments
-        if len(segments) == 3:
-            patterns_by_length[5].remove(pattern)
-            coding[5] = pattern
-            break
-    for pattern in patterns_by_length[5]:
-        segments = pattern - coding[5]
-        if len(segments) == 1:
-            coding[3] = pattern
-        if len(segments) == 2:
-            coding[2] = pattern
+    coding_of = [set()] * 10
+    coding_of[1] = segment_group[2][0]
+    coding_of[7] = segment_group[3][0]
+    coding_of[4] = segment_group[4][0]
+    coding_of[8] = segment_group[7][0]
 
-    for pattern in patterns_by_length[6]:
-        segments = pattern - top_side_and_middle_segments
-        if len(segments) == 5:
-            patterns_by_length[6].remove(pattern)
-            coding[0] = pattern
-    for pattern in patterns_by_length[6]:
-        segments = pattern - coding[3]
-        if len(segments) == 1:
-            coding[9] = pattern
-        if len(segments) == 2:
-            coding[6] = pattern
+    top_left_and_mid = coding_of[4] - coding_of[1]
+    coding_of[5] = pop_seg_diff_of_length(3, segment_group[5], top_left_and_mid)
+    coding_of[0] = pop_seg_diff_of_length(5, segment_group[6], top_left_and_mid)
 
-    return decode_output(output, coding)
+    coding_of[3], coding_of[2] = sort_on_diff_size(segment_group[5], coding_of[5])
+    coding_of[9], coding_of[6] = sort_on_diff_size(segment_group[6], coding_of[3])
+
+    return decode_output(output, coding_of)
+
+
+def pop_seg_diff_of_length(target_length, segments, diff_reference_segment):
+    for segment in segments:
+        rem = segment - diff_reference_segment
+        if len(rem) == target_length:
+            segments.remove(segment)
+            return segment
+
+
+def sort_on_diff_size(segments, diff_reference_segment):
+    return sorted(segments, key=lambda seg: seg - diff_reference_segment)
 
 
 def decode_output(output, coding):
