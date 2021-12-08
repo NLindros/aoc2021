@@ -50,12 +50,7 @@ def sort_on_diff_size(segments, diff_reference_segment):
 
 
 def decode_output(outputs, coding):
-    result = [
-        str(num)
-        for output in outputs
-        for num, segment in enumerate(coding)
-        if output == segment
-    ]
+    result = [str(num) for output in outputs for num, segment in enumerate(coding) if output == segment]
     return int("".join(result))
 
 
