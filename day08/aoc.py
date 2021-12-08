@@ -25,9 +25,7 @@ def collect_sets(signals):
 def decode_line(line):
     segments, output = map(collect_sets, line.split("|"))
     coding_of = [set()] * 10
-    coding_of[1], coding_of[7], coding_of[4], *multi_groups, coding_of[8] = sorted(
-        segments, key=len
-    )
+    coding_of[1], coding_of[7], coding_of[4], *multi_groups, coding_of[8] = sorted(segments, key=len)
     seg_of_size_5, seg_of_size_6 = multi_groups[:3], multi_groups[3:]
 
     top_left_and_mid = coding_of[4] - coding_of[1]
