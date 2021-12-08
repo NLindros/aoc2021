@@ -36,11 +36,10 @@ def decode_line(line):
 
 
 def pop_seg_with_diff_of_length(target_length, segments, diff_reference_segment):
-    for segment in segments:
+    for idx, segment in enumerate(segments):
         rem = segment - diff_reference_segment
         if len(rem) == target_length:
-            segments.remove(segment)
-            return segment
+            return segments.pop(idx)
 
 
 def sort_on_diff_size(segments, diff_reference_segment):
