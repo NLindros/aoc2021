@@ -1,6 +1,8 @@
 import os
 from collections import deque
 
+# from functools import reduce
+
 
 def read_input(file_path="input.txt"):
     with open(file_path, "r") as fid:
@@ -57,15 +59,20 @@ def solution_part_1(data):
 
 def solution_part_2(data):
     incomplete = filter(None, [find_incomplete_closing(line) for line in data])
-    all_score = []
-    for line in incomplete:
-        result = 0
-        for char in line:
-            result = result * 5 + incomplete_scoring[char]
-        all_score.append(result)
-
+    all_score = [line_score(line) for line in incomplete]
     mid_idx = len(all_score) // 2
     return sorted(all_score)[mid_idx]
+
+
+def line_score(line):
+    # return reduce(
+    #     lambda result, char_val: result * 5 + char_val,
+    #     [incomplete_scoring[char] for char in line],
+    # )
+    result = 0
+    for char in line:
+        result = result * 5 + incomplete_scoring[char]
+    return result
 
 
 if __name__ == "__main__":
