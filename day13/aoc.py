@@ -43,6 +43,7 @@ if __name__ == "__main__":
     part = os.environ.get("part")
     dots, instructions = read_input()
     if part == "part1":
-        print(len(fold_once(dots, instructions)))
+        direction, fold = instructions[0]
+        print(len(fold_once(dots, direction, fold)))
     else:
         print(print_dots(fold_dots(dots, instructions)))
