@@ -1,7 +1,5 @@
 from itertools import permutations
 import os
-from math import prod, inf
-from typing import List
 from collections import defaultdict, Counter
 
 
@@ -57,4 +55,4 @@ def find_paths_part_2(cave):
 if __name__ == "__main__":
     part = os.environ.get("part")
     solver = {"part1": find_paths_part_1, "part2": find_paths_part_2}
-    print(solver[part](read_input()))
+    print(len(solver[part](read_input())))

@@ -1,10 +1,28 @@
 from itertools import chain
 import os
-from math import prod, inf
-from typing import List
+from math import prod
+from dataclasses import dataclass
+
+MAX_VALUE = 9
 
 
-MAX = 9
+@dataclass
+class Size:
+    height: int
+    width: int
+
+    def number_of_samples(self):
+        return self.height * self.width
+
+    def transposed_to_flat(self):
+        for i in range(self.height):
+            for j in range(0, self.number_of_samples(), self.height):
+                yield i + j
+
+    def flat_to_transposed(self):
+        for i in range(self.width):
+            for j in range(0, self.number_of_samples(), self.width):
+                yield i + j
 
 
 def read_input(file_path="input.txt"):
@@ -13,24 +31,18 @@ def read_input(file_path="input.txt"):
 
 
 def solve_part1(data):
-    is_min_point = is_smallest_in_neighborhood(data)
-    return sum(
-        [
-            val + 1
-            for line, cond_line in zip(data, is_min_point)
-            for val, cond in zip(line, cond_line)
-            if cond
-        ]
-    )
+    size = Size(len(data), len(data[0]))
+    stream = list(chain(*data))
+    is_min_point = is_smallest_in_neighborhood(stream, size)
+    return sum(val + 1 for val, min_point in zip(stream, is_min_point) if min_point)
 
 
-def is_smallest_in_neighborhood(matrix):
-    height, width = len(matrix), len(matrix[0])
-    stream = list(chain(*matrix))
-    horizontal = min_point_in_stream(stream, width=width, height=height)
-    transpose_data = list(chain(*zip(*matrix)))
-    vertical = min_point_in_stream(transpose_data, width=height, height=width)
-    return [h & v for v, h in zip(horizontal, vertical)]
+def is_smallest_in_neighborhood(stream, size: Size):
+    horizontal = min_point_in_stream(stream, width=size.width, height=size.height)
+    transpose_data = [stream[i] for i in size.flat_to_transposed()]
+    vertical = min_point_in_stream(transpose_data, width=size.height, height=size.width)
+    reflipped = (vertical[i] for i in size.transposed_to_flat())
+    return [h & v for v, h in zip(horizontal, reflipped)]
 
 
 def min_point_in_stream(stream, width, height):
@@ -41,36 +53,26 @@ def min_point_in_stream(stream, width, height):
     return [l & r for l, r in zip(left, right)]
 
 
-def left_to_right(line):
-    left = (True, *[a > b for a, b in zip(line[:-1], line[1:])])
-    right = (*[a < b for a, b in zip(line[:-1], line[1:])], True)
-    is_min_point = (l & r for l, r in zip(left, right))
-    return is_min_point
-
-
 def get_basins(data):
-    is_min_point = is_smallest_in_neighborhood(data)
-    min_points = [
-        (i, j)
-        for (i, row), cond_line in zip(enumerate(data), is_min_point)
-        for (j, val), cond in zip(enumerate(row), cond_line)
-        if cond
-    ]
-    groups = [get_group_around_point(data, point) for point in min_points]
+    size = Size(len(data), len(data[0]))
+    stream = list(chain(*data))
+    is_min_points = is_smallest_in_neighborhood(stream, size)
+    min_points = (idx for idx, is_min_point in enumerate(is_min_points) if is_min_point)
+    groups = (
+        get_group_around_point(stream, size, min_point_idx)
+        for min_point_idx in min_points
+    )
     group_size = sorted(map(len, groups))
     return prod(group_size[-3:])
 
 
-def get_group_around_point(data, start):
-    height, width = len(data), len(data[0])
-    start_idx = width * start[0] + start[1]
+def get_group_around_point(stream, size, start_idx):
     group = [start_idx]
-    stream = list(chain(*data))
-    last_row = width * (height - 1)
+    last_row = size.width * (size.height - 1)
     for idx in group:
-        for new_idx in get_adjacent_points(width, last_row, idx):
+        for new_idx in get_adjacent_points(size.width, last_row, idx):
             if new_idx not in group:
-                if stream[new_idx] < MAX:
+                if stream[new_idx] < MAX_VALUE:
                     group.append(new_idx)
     return group
 
@@ -87,12 +89,6 @@ def get_adjacent_points(width, last_row, idx):
     )
 
     return adjacent
-
-
-def basin_points(data: List[list]) -> List[tuple]:
-    return [
-        (i, j) for i, row in enumerate(data) for j, val in enumerate(row) if val < MAX
-    ]
 
 
 if __name__ == "__main__":
